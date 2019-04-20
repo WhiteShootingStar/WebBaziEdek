@@ -30,6 +30,7 @@ public class AvailableItems extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		User user = (User) req.getAttribute("USER");
 		DataSource source = (DataSource) req.getAttribute("DATA");
+		System.out.println(req.getQueryString() + " in items");
 		PrintWriter out = resp.getWriter();
 		resp.setContentType("text/html; charset=windows-1250");
 		out.println(" 	<form action= /DB/resources" + " method=\"get\">");
@@ -42,38 +43,27 @@ public class AvailableItems extends HttpServlet {
 			System.out.println("invalidation");
 			RequestDispatcher disp = getServletContext().getRequestDispatcher("/login");
 			out.close();
-			disp.forward(req, resp);
+			// disp.forward(req, resp);
 		} else {
-			List<Resource> list = getList(user.getId(), source);
+			ResourceRepository repos = new ResourceRepository(source);
+			List<Resource> list = repos.getList(user.getId());
 
 			out.println("<ol>");
-			int counter=0;
+			int counter = 0;
 			for (Resource resource : list) {
-				out.println("<li>" +resource.getName() +"</li>");
-				req.setAttribute("RES"+counter, resource);
-				
+				out.println("<li> <a href=\"info?id=" + resource.getId() + "\"> "
+						+ resource.getName() + "</a></li>");
+				req.setAttribute("RES" + counter, resource);
+
 			}
-			
+			req.setAttribute("DATA", source);
+			req.setAttribute("LIST", list);
 			out.close();
-			
+
 		}
 	}
-	public void redirect( Resource res,HttpServletRequest req, HttpServletResponse resp) {
-		req.setAttribute("FINAL",res );
-		RequestDispatcher disp = getServletContext().getRequestDispatcher("/info");
-		try {
-			disp.forward(req, resp);
-		} catch (ServletException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-	private List<Resource> getList(int id, DataSource source) {
-		ResourceRepository repos = new ResourceRepository(source);
-		List<Integer> ids = repos.getResourceIds(id);
-		List<Resource> list = new ArrayList<>();
-		ids.stream().map(e -> repos.getResoursesForId(e)).sequential().forEach(e -> list.addAll(e));
-		return list;
-	}
+
+	
+	
+
 }

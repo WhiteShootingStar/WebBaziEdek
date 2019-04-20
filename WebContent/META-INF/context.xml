@@ -3,7 +3,7 @@
 	<Resource name="conn" type="javax.sql.DataSource"
 		password="oracle12" driverClassName="oracle.jdbc.driver.OracleDriver"
 		maxIdle="30" maxWait="5000" username="s16550"
-		url="jdbc:oracle:thin:@db-oracle:1521:baza" maxActive="60" />
+		url="jdbc:oracle:thin:@db-oracle:1521:baza" maxActive="80" />
 	<WatchedResource>WEB-INF/web.xml</WatchedResource>
 </Context>
 
